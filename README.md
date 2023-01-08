@@ -15,7 +15,7 @@ https://documenter.getpostman.com/view/23688165/2s8Z75SVbn
 
 ## Whats in the project/ What i did
 
-5 routes where created according to the requried 
+5 routes where created according to the requirement 
 
 - `/api/weather` - Had to implement the weather api, any user can access this api http://api.openweathermap.org/data/2.5/forecast/daily?q=London&cnt=3&appid={API key} and i had to parse the data according to the requirement
 
