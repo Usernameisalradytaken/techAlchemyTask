@@ -22,4 +22,4 @@ https://documenter.getpostman.com/view/23688165/2s8Z75SVbn
 - `/api/signup` - requires name, password, email to register a new user and encrypted password was stored in DB
 - `/api/login` - after successful login, session is create for login user
 - `/api/logout` - user can logout
-- `/api/news/?search=bitcoin` - this is protected routes only login user can access it.
+- `/api/news/?search=bitcoin` - this is protected routes only logged in user can access it.
