@@ -4,6 +4,8 @@ Backend application that fetches data from various sources and parse the data ac
 
 ## How to run the application
 
+redis is used to cache responses, it connects to default port 6379.
+
 1. git clone the repo
 2. npm install
 3. Change the api keys and the database url and jwt_secret as well as session_secret in .env.testing file

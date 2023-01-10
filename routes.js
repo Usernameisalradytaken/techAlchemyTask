@@ -3,6 +3,8 @@ const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./user-model");
+const redisClient = require("./redis-client");
+const cacheMiddleware = require("./middleware");
 require("dotenv").config();
 
 router.route("/signup").post(async (req, res) => {
@@ -153,20 +155,36 @@ router.route("/news").get(
       next();
     });
   },
+  cacheMiddleware,
   async (req, res) => {
-    const query = req.query.search || "Apple";
+    const query = req.query.search || "apple";
     console.log(query);
-    const url = `https://newsapi.org/v2/everything?q=${query}&from=2023-01-08&sortBy=popularity&apiKey=${process.env.news_api}`;
-    const { data } = await axios.get(url);
-    // console.log(data);
-    res.status(200).send({
-      count: data.totalResults,
-      data: data.articles,
-    });
+    try {
+      const url = `https://newsapi.org/v2/everything?q=${query}&from=2023-01-08&sortBy=popularity&apiKey=${process.env.news_api}`;
+      const { data } = await axios.get(url);
+      console.log(data);
+      redisClient.setEx(
+        query,
+        1440,
+        JSON.stringify({
+          count: data.totalResults,
+          data: data.articles,
+        })
+      );
+      return res.status(200).send({
+        count: data.totalResults,
+        data: data.articles,
+      });
+    } catch (error) {
+      console.log("Error in news api", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
   }
 );
 
-router.route("/weather").get(async (req, res) => {
+router.route("/weather").get(cacheMiddleware, async (req, res) => {
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=28.4646148&lon=77.0299194&appid=${process.env.weather_api_key}`;
 
   try {
@@ -202,7 +220,16 @@ router.route("/weather").get(async (req, res) => {
       }
     }
     console.log(results);
-
+    redisClient.setEx(
+      "weather",
+      1440,
+      JSON.stringify({
+        count: results.length,
+        unit: "metric",
+        location: "Gurugram",
+        data: results,
+      })
+    );
     res.status(200).json({
       count: results.length,
       unit: "metric",
