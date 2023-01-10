@@ -1,4 +1,4 @@
-# Tech Alchmey Task
+# Tech Alchemy Task
 
 Backend application that fetches data from various sources and parse the data according to the needs. Also had to implement /signup, /login , logout functionality and manage user sessions.
 
